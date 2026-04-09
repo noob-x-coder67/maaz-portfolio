@@ -242,6 +242,42 @@ export const projects = [
     process: "Research → Wireframes → UI Design → Prototype",
     images: ["/images/music_player.png"],
   },
+  {
+    id: 21,
+    title: "UI/UX — Plants Selling App",
+    category: "UI/UX",
+    image: "/images/e_com_1.png",
+    description:
+      "Mobile app UI design for a plants selling experience, including product browsing, category discovery, item details, and checkout-ready purchase flow across multiple screens.",
+    client: "Personal Project",
+    tools: ["Figma", "Adobe Illustrator"],
+    process:
+      "User Flow Planning → Wireframes → Visual UI System → Screen Prototypes",
+    images: [
+      "/images/e_com_1.png",
+      "/images/e_com_2.png",
+      "/images/e_com_3.png",
+      "/images/e_com_4.png",
+    ],
+  },
+  {
+    id: 22,
+    title: "UI/UX — Shoes Store Web Design",
+    category: "UI/UX",
+    image: "/images/store_1.png",
+    description:
+      "E-commerce website UI concept for a shoes selling brand, covering homepage hero, catalog layout, product detail presentation, and conversion-focused shopping flow.",
+    client: "Personal Project",
+    tools: ["Figma", "Adobe Illustrator"],
+    process:
+      "Information Architecture → Wireframes → UI Exploration → Final Web Screens",
+    images: [
+      "/images/store_1.png",
+      "/images/store_2.png",
+      "/images/store_3.png",
+      "/images/store_4.png",
+    ],
+  },
 ];
 
 export const categories = [

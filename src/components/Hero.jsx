@@ -7,7 +7,13 @@ import { socialLinks, contactInfo } from "../data/projects";
 const whatsappMessage = encodeURIComponent(
   "Hi Maaz, I found you through your portfolio website and want to discuss a project. (Source: Portfolio Website)",
 );
-const whatsappHref = `https://wa.me/92${contactInfo.phone.replace(/^0/, "")}?text=${whatsappMessage}`;
+const phoneDigits = contactInfo.phone.replace(/\D/g, "");
+const whatsappNumber = phoneDigits.startsWith("92")
+  ? phoneDigits
+  : phoneDigits.startsWith("0")
+    ? `92${phoneDigits.slice(1)}`
+    : `92${phoneDigits}`;
+const whatsappHref = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
 const socials = [
   { icon: FaInstagram, href: socialLinks.instagram, label: "Instagram" },
