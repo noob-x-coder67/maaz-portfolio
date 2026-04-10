@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import ProjectDetails from "./pages/ProjectDetails";
 import { ScrollToTop, ScrollProgress, CustomCursor } from "./components/UI";
 
+
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
