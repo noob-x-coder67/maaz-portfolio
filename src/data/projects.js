@@ -262,11 +262,11 @@ export const projects = [
   },
   {
     id: 22,
-    title: "UI/UX — Shoes Store Web Design",
+    title: "UI/UX — Helmet Store Web Design",
     category: "UI/UX",
     image: "/images/store_1.png",
     description:
-      "E-commerce website UI concept for a shoes selling brand, covering homepage hero, catalog layout, product detail presentation, and conversion-focused shopping flow.",
+      "E-commerce website UI concept for a helmet selling brand, covering homepage hero, catalog layout, product detail presentation, and conversion-focused shopping flow.",
     client: "Personal Project",
     tools: ["Figma", "Adobe Illustrator"],
     process:
