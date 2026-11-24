@@ -69,26 +69,28 @@ const pageVariants = {
 
 export default function Home() {
   return (
-    <Motion.div
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      transition={{ duration: 0.4 }}
-    >
+    <>
       <Hero />
-      <Divider variant="wave" />
-      <About />
-      <Divider />
-      <Portfolio />
-      <Divider variant="line" />
-      <Skills />
-      <Divider />
-      <Services />
-      <Divider variant="wave" />
-      <Testimonials />
-      <Divider variant="line" />
-      <Contact />
-    </Motion.div>
+      <Motion.div
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        transition={{ duration: 0.4 }}
+      >
+        <Divider variant="wave" />
+        <About />
+        <Divider />
+        <Portfolio />
+        <Divider variant="line" />
+        <Skills />
+        <Divider />
+        <Services />
+        <Divider variant="wave" />
+        <Testimonials />
+        <Divider variant="line" />
+        <Contact />
+      </Motion.div>
+    </>
   );
 }
