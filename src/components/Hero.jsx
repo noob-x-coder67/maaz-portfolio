@@ -1,160 +1,173 @@
-import { motion as Motion } from "framer-motion";
-import { TypeAnimation } from "react-type-animation";
-import { FaLinkedinIn, FaInstagram, FaWhatsapp } from "react-icons/fa";
-import { HiArrowDown, HiDownload } from "react-icons/hi";
-import { socialLinks, contactInfo } from "../data/projects";
+import { useState } from "react";
+import { motion as Motion, useReducedMotion, useSpring } from "framer-motion";
+import { FaWhatsapp } from "react-icons/fa";
+import { HiOutlinePause, HiOutlinePlay } from "react-icons/hi";
+import { Link } from "react-router-dom";
+import { contactInfo, projects } from "../data/projects";
+import "./Hero.css";
 
-const whatsappMessage = encodeURIComponent(
-  "Hi Maaz, I found you through your portfolio website and want to discuss a project. (Source: Portfolio Website)",
-);
 const phoneDigits = contactInfo.phone.replace(/\D/g, "");
 const whatsappNumber = phoneDigits.startsWith("92")
   ? phoneDigits
-  : phoneDigits.startsWith("0")
-    ? `92${phoneDigits.slice(1)}`
-    : `92${phoneDigits}`;
+  : `92${phoneDigits.replace(/^0/, "")}`;
+const whatsappMessage = encodeURIComponent(
+  "Hi Maaz, I found your portfolio and would like to discuss a design project.",
+);
 const whatsappHref = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
-const socials = [
-  { icon: FaInstagram, href: socialLinks.instagram, label: "Instagram" },
-  { icon: FaWhatsapp, href: whatsappHref, label: "WhatsApp" },
-  { icon: FaLinkedinIn, href: socialLinks.linkedin, label: "LinkedIn" },
-];
+const featured = [
+  {
+    id: 4,
+    label: "Branding",
+    width: 1280,
+    height: 819,
+    alt: "Sidra Warriach’s monogram and wordmark embossed on textured paper",
+  },
+  {
+    id: 14,
+    label: "Digital",
+    width: 1080,
+    height: 1080,
+    alt: "NexaCore Cloud AI launch graphic in blue and white",
+  },
+  {
+    id: 18,
+    label: "Print",
+    width: 1080,
+    height: 1528,
+    alt: "Melio Cafe’s black and yellow menu with food photography",
+  },
+].map(({ id, ...artwork }) => ({
+  ...projects.find((project) => project.id === id),
+  ...artwork,
+}));
+
+const pointerSettings = { stiffness: 150, damping: 25 };
+const depthRoles = ["front", "left", "right"];
+
+function ArtworkShowcase() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const rotateX = useSpring(0, pointerSettings);
+  const rotateY = useSpring(0, pointerSettings);
+
+  function resetPerspective() {
+    rotateX.set(0);
+    rotateY.set(0);
+  }
+
+  function followPointer(event) {
+    if (
+      paused ||
+      reduceMotion ||
+      event.pointerType !== "mouse" ||
+      !window.matchMedia("(min-width: 54rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)").matches
+    ) {
+      return;
+    }
+
+    const { left, top, width, height } = event.currentTarget.getBoundingClientRect();
+    rotateX.set((0.5 - (event.clientY - top) / height) * 3);
+    rotateY.set(((event.clientX - left) / width - 0.5) * 4);
+  }
+
+  return (
+    <section className="hero-showcase" aria-labelledby="hero-showcase-title" data-paused={paused}>
+      <div className="hero-showcase-header">
+        <h2 id="hero-showcase-title">Featured work</h2>
+        <button
+          type="button"
+          className="hero-motion-toggle"
+          aria-label={paused ? "Resume artwork motion" : "Pause artwork motion"}
+          onClick={() => {
+            resetPerspective();
+            setPaused(!paused);
+          }}
+        >
+          {paused ? <HiOutlinePlay aria-hidden="true" /> : <HiOutlinePause aria-hidden="true" />}
+        </button>
+      </div>
+
+      <div
+        className="hero-stage"
+        onPointerMove={followPointer}
+        onPointerLeave={resetPerspective}
+        onPointerCancel={resetPerspective}
+      >
+        <Motion.div className="hero-stack" style={{ rotateX, rotateY }}>
+          {featured.map((project, index) => (
+            <div
+              className="hero-artwork"
+              key={project.id}
+              data-depth={depthRoles[(index - active + featured.length) % featured.length]}
+              style={{ "--art-ratio": project.width / project.height }}
+            >
+              <Link to={`/project/${project.id}`} aria-label={`View project: ${project.title}`}>
+                <img
+                  src={project.image}
+                  alt={project.alt}
+                  width={project.width}
+                  height={project.height}
+                  fetchPriority={index === 0 ? "high" : "auto"}
+                />
+              </Link>
+            </div>
+          ))}
+        </Motion.div>
+      </div>
+
+      <div className="hero-showcase-footer">
+        <p className="hero-project-title" aria-live="polite" aria-atomic="true">
+          {featured[active].title}
+        </p>
+        <div className="hero-project-controls" role="group" aria-label="Choose featured artwork">
+          {featured.map((project, index) => (
+            <button
+              type="button"
+              key={project.id}
+              aria-pressed={index === active}
+              onClick={() => setActive(index)}
+            >
+              {project.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function Hero() {
   return (
-    <section
-      id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-linear-to-br from-gray-50 via-white to-indigo-50 dark:from-dark dark:via-dark dark:to-indigo-950"
-    >
-      {/* Decorative blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <Motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-primary/5 dark:bg-primary/10"
-        />
-        <Motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-amber-400/5 dark:bg-amber-400/10"
-        />
-        <Motion.div
-          animate={{ y: [0, -20, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 right-1/4 w-20 h-20 rounded-2xl bg-primary/10 rotate-45"
-        />
-        <Motion.div
-          animate={{ y: [0, 20, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/3 left-1/3 w-16 h-16 rounded-full bg-amber-400/10"
-        />
+    <section id="home" className="home-hero" aria-labelledby="home-hero-title">
+      <div className="home-hero-inner">
+        <div className="home-hero-copy">
+          <p className="home-hero-eyebrow">MAAZ · GRAPHIC DESIGNER · ISLAMABAD</p>
+          <h1 id="home-hero-title">
+            Branding, Print <span>&amp; Digital Design</span>
+          </h1>
+          <p className="home-hero-description">
+            I design visual identities, print materials, and campaign graphics for
+            businesses, nonprofits, and creators.
+          </p>
+          <div className="home-hero-actions">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary justify-center"
+            >
+              <FaWhatsapp aria-hidden="true" /> Discuss Your Project
+            </a>
+            <a href="#portfolio" className="btn-outline justify-center">
+              View My Work
+            </a>
+          </div>
+        </div>
+
+        <ArtworkShowcase />
       </div>
-
-      <div className="relative z-10 text-center px-6 max-w-4xl">
-        <Motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-primary font-semibold mb-4 tracking-widest uppercase text-sm"
-        >
-          Welcome to my portfolio
-        </Motion.p>
-
-        <Motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="text-5xl md:text-7xl font-bold font-heading text-gray-900 dark:text-white mb-6"
-        >
-          Hello, I'm <span className="text-primary">Maaz</span>
-        </Motion.h1>
-
-        <Motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="text-2xl md:text-3xl font-medium text-gray-600 dark:text-gray-300 mb-6 h-11"
-        >
-          <TypeAnimation
-            sequence={[
-              "Graphic Designer",
-              2000,
-              "Logo Designer",
-              2000,
-              "Brand Identity Expert",
-              2000,
-              "YouTube Thumbnail Designer",
-              2000,
-              "UI/UX Designer",
-              2000,
-            ]}
-            wrapper="h2"
-            speed={50}
-            repeat={Infinity}
-            className="inline-block"
-          />
-        </Motion.div>
-
-        <Motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="text-lg text-gray-500 dark:text-gray-400 mb-10 max-w-2xl mx-auto"
-        >
-          5+ years creating logos, branding, posters, and digital experiences
-          for NGOs, restaurants, corporates & YouTube creators — based in
-          Islamabad, Pakistan.
-        </Motion.p>
-
-        <Motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-          className="flex flex-wrap justify-center gap-4 mb-12"
-        >
-          <a href="#portfolio" className="btn-primary">
-            View Portfolio
-          </a>
-          <a href="#contact" className="btn-outline">
-            Hire Me
-          </a>
-        </Motion.div>
-
-        <Motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="flex justify-center gap-5"
-        >
-          {socials.map((item) => {
-            const Icon = item.icon;
-            return (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={item.label}
-                className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-white transition-all duration-300 hover:-translate-y-1"
-              >
-                <Icon size={20} />
-              </a>
-            );
-          })}
-        </Motion.div>
-      </div>
-
-      <Motion.a
-        href="#about"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 10, 0] }}
-        transition={{ delay: 1.5, y: { repeat: Infinity, duration: 2 } }}
-        className="absolute bottom-10 text-gray-400 dark:text-gray-500"
-        aria-label="Scroll down"
-      >
-        <HiArrowDown size={24} />
-      </Motion.a>
     </section>
   );
 }
