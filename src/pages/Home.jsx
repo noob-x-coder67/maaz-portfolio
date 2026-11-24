@@ -1,5 +1,6 @@
 import { motion as Motion } from "framer-motion";
 import Hero from "../components/Hero";
+import SelectedWork from "../components/SelectedWork";
 import About from "../components/About";
 import Portfolio from "../components/Portfolio";
 import Skills from "../components/Skills";
@@ -71,6 +72,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <SelectedWork />
       <Motion.div
         variants={pageVariants}
         initial="initial"
@@ -79,9 +81,9 @@ export default function Home() {
         transition={{ duration: 0.4 }}
       >
         <Divider variant="wave" />
-        <About />
-        <Divider />
         <Portfolio />
+        <Divider />
+        <About />
         <Divider variant="line" />
         <Skills />
         <Divider />

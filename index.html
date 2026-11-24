@@ -19,6 +19,17 @@
       content="Portfolio of Maaz - Professional Graphic Designer specializing in branding, posters, and digital design."
     />
     <meta property="og:type" content="website" />
+    <script>
+      // Start the homepage's lead artwork request before React renders.
+      if (location.pathname === "/") {
+        const artwork = document.createElement("link");
+        artwork.rel = "preload";
+        artwork.as = "image";
+        artwork.href = "/images/sidra-hero.webp";
+        artwork.fetchPriority = "high";
+        document.head.append(artwork);
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
