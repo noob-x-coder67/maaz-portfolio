@@ -3,6 +3,9 @@ import { motion as Motion, useReducedMotion, useSpring } from "framer-motion";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlinePause, HiOutlinePlay } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import brandingPreview from "../assets/hero-branding-preview.jpg?inline";
+import digitalPreview from "../assets/hero-digital-preview.jpg?inline";
+import printPreview from "../assets/hero-print-preview.jpg?inline";
 import { contactInfo, projects } from "../data/projects";
 import "./Hero.css";
 
@@ -19,13 +22,16 @@ const featured = [
   {
     id: 4,
     label: "Branding",
-    width: 1280,
-    height: 819,
+    preview: brandingPreview,
+    heroImage: "/images/sidra-hero.webp",
+    width: 1080,
+    height: 691,
     alt: "Sidra Warriach’s monogram and wordmark embossed on textured paper",
   },
   {
     id: 14,
     label: "Digital",
+    preview: digitalPreview,
     width: 1080,
     height: 1080,
     alt: "NexaCore Cloud AI launch graphic in blue and white",
@@ -33,6 +39,7 @@ const featured = [
   {
     id: 18,
     label: "Print",
+    preview: printPreview,
     width: 1080,
     height: 1528,
     alt: "Melio Cafe’s black and yellow menu with food photography",
@@ -48,6 +55,7 @@ const depthRoles = ["front", "left", "right"];
 function ArtworkShowcase() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [loadedArtwork, setLoadedArtwork] = useState({});
   const reduceMotion = useReducedMotion();
   const rotateX = useSpring(0, pointerSettings);
   const rotateY = useSpring(0, pointerSettings);
@@ -101,15 +109,22 @@ function ArtworkShowcase() {
               className="hero-artwork"
               key={project.id}
               data-depth={depthRoles[(index - active + featured.length) % featured.length]}
-              style={{ "--art-ratio": project.width / project.height }}
+              style={{
+                "--art-ratio": project.width / project.height,
+                "--art-preview": `url("${project.preview}")`,
+              }}
             >
               <Link to={`/project/${project.id}`} aria-label={`View project: ${project.title}`}>
                 <img
-                  src={project.image}
+                  src={project.heroImage || project.image}
                   alt={project.alt}
                   width={project.width}
                   height={project.height}
-                  fetchPriority={index === 0 ? "high" : "auto"}
+                  decoding="async"
+                  data-loaded={loadedArtwork[project.id]}
+                  onLoad={() => setLoadedArtwork((loaded) => ({ ...loaded, [project.id]: true }))}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : undefined}
                 />
               </Link>
             </div>
@@ -160,7 +175,7 @@ export default function Hero() {
             >
               <FaWhatsapp aria-hidden="true" /> Discuss Your Project
             </a>
-            <a href="#portfolio" className="btn-outline justify-center">
+            <a href="#selected-work" className="btn-outline justify-center">
               View My Work
             </a>
           </div>
